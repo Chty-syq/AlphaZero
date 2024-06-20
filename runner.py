@@ -18,6 +18,7 @@ class Runner:
         self.width = args.width
         self.height = args.height
         self.kl_threshold = args.kl_threshold
+        self.save_cycle = args.save_cycle
 
         self.board = Board(args.width, args.height, args.n_in_row)
         self.game = Game(self.board, args)
@@ -48,17 +49,25 @@ class Runner:
             loss = self.agent.train_step(states, mcts_probs, winners_z)
             probs_n, value_n = self.agent.predict_batch(states)
             kl = np.mean(np.sum(probs_o * (np.log(probs_o + 1e-10) - np.log(probs_n + 1e-10)), axis=1))  # KL-Divergence
-            self.agent.scheduler.step(kl)
-            print("[Step {}] loss: {:6f}, lr: {:6f}, kl: {:5f}".format(idx, loss, self.agent.get_current_lr(), kl))
             if kl > self.kl_threshold * 4.0:
                 break
 
+        return loss, kl
+
     def train(self):
         for idx in range(self.n_epochs):
-            print(f"[Epoch {idx + 1}]")
             self.generate_episodes()
             if len(self.buffer) > self.batch_size:
-                self.policy_update()
+                loss, kl = self.policy_update()
+                self.agent.scheduler.step(kl)
+                print("[Epoch {}] loss: {:6f}, lr: {:6f}, kl: {:5f}".format(idx + 1, loss, self.agent.get_current_lr(), kl))
+            else:
+                print("[Epoch {}]".format(idx + 1))
+            if (idx + 1) % self.save_cycle == 0:
+                self.agent.save_model()
+
+    def test(self):
+        self.game.human_play(self.mcts_player)
 
 
 def main():
@@ -66,7 +75,8 @@ def main():
     print("using device: " + str(args.device))
 
     runner = Runner(args)
-    runner.train()
+    # runner.train()
+    runner.test()
 
 
 if __name__ == "__main__":

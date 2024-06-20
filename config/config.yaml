@@ -1,16 +1,17 @@
 board:
-  width: 6
-  height: 6
-  n_in_row: 4
+  width: 8
+  height: 8
+  n_in_row: 5
 
 mcts:
   c_puct: 5
   n_rollout: 400
   tau: 1.0
   epsilon: 0.25
-  dirichlet_noise: 0.3
+  dirichlet_noise: 0.03
 
 learn:
+  load_model: True
   n_epochs: 1500
   train_step: 5
   batch_size: 512
@@ -20,3 +21,4 @@ learn:
   min_lr: 0.0002
   max_lr: 0.02
   kl_threshold: 0.02
+  save_cycle: 50

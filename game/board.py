@@ -42,7 +42,7 @@ class Board:
         if len(self.states) % 2 == 0:
             full_state[3][:, :] = 1.0
 
-        return full_state
+        return full_state[:, ::-1, :]
 
     def move(self, index):
         self.states[index] = self.cur_player

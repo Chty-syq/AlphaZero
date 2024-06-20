@@ -6,9 +6,15 @@ class ResNet(nn.Module):
     def __init__(self, args):
         super(ResNet, self).__init__()
         self.n_actions = args.n_actions
+
         self.conv1 = nn.Conv2d(4, 32, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+
+        self.bn1 = nn.BatchNorm2d(32)
+        self.bn2 = nn.BatchNorm2d(64)
+        self.bn3 = nn.BatchNorm2d(128)
+
         self.conv_p = nn.Conv2d(128, 4, kernel_size=1)
         self.conv_v = nn.Conv2d(128, 2, kernel_size=1)
         self.fc_p1 = nn.Linear(4 * self.n_actions, self.n_actions)
@@ -16,9 +22,9 @@ class ResNet(nn.Module):
         self.fc_v2 = nn.Linear(64, 1)
 
     def get_feature(self, state):
-        x = F.relu(self.conv1(state))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
+        x = F.relu(self.bn1(self.conv1(state)))
+        x = F.relu(self.bn2(self.conv2(x)))
+        x = F.relu(self.bn3(self.conv3(x)))
         return x
 
     def forward(self, state):

@@ -22,13 +22,16 @@ class Graphic:
 
         self.canvas.update()
 
+    def handle(self):
+        self.root.mainloop()
+
     def clear(self):
         self.canvas.delete("stone")
         self.canvas.update()
 
     def move(self, player, location):
-        cx = (location[0] + 1) * self.line_dist
-        cy = (location[1] + 1) * self.line_dist
+        cy = (location[0] + 1) * self.line_dist
+        cx = (location[1] + 1) * self.line_dist
         radius = 0.4 * self.line_dist
         if not player:
             self.canvas.create_oval(cx - radius, cy - radius, cx + radius, cy + radius, fill="black", tags="stone")

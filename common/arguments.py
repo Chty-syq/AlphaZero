@@ -18,5 +18,6 @@ def get_args():
             setattr(args, k, v)
 
     args.n_actions = args.width * args.height
+    args.save_path = Path(__file__).parent.parent / "models"
     args.device = torch.device("cuda" if torch.cuda else "cpu")
     return args
